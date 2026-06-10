@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Products - AgriMarket</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Small styling additions specific to the product catalog layout */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .product-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .product-card h4 { margin: 10px 0 5px 0; color: #2e7d32; }
+        .product-price { font-weight: bold; color: #333; margin-bottom: 15px; }
+        .select-btn {
+            display: block;
+            width: 100%;
+            background-color: #f4f7f5;
+            border: 2px solid #2e7d32;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .select-btn.selected {
+            background-color: #2e7d32;
+            color: white;
+        }
+        .catalog-container {
+            max-width: 1000px;
+            width: 100%;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="catalog-container">
+        <h2>Marketplace Products</h2>
+        <p>Select the items you wish to purchase, then proceed to layout your payment.</p>
+
+        <div class="products-grid">
+            <div class="product-card" data-id="1" data-name="Organic Tomatoes (x50kg)" data-price="75.00">
+                <div style="font-size: 3rem;">🍅</div>
+                <h4>Organic Tomatoes</h4>
+                <div class="product-price">$75.00</div>
+                <button class="select-btn" onclick="toggleSelect(this)">Select Item</button>
+            </div>
+
+            <div class="product-card" data-id="2" data-name="Fresh Maize Bags (x2)" data-price="50.00">
+                <div style="font-size: 3rem;">🌽</div>
+                <h4>Fresh Maize Bags</h4>
+                <div class="product-price">$50.00</div>
+                <button class="select-btn" onclick="toggleSelect(this)">Select Item</button>
+            </div>
+
+            <div class="product-card" data-id="3" data-name="Sweet Potatoes (x20kg)" data-price="40.00">
+                <div style="font-size: 3rem;">🍠</div>
+                <h4>Sweet Potatoes</h4>
+                <div class="product-price">$40.00</div>
+                <button class="select-btn" onclick="toggleSelect(this)">Select Item</button>
+            </div>
+
+            <div class="product-card" data-id="4" data-name="Fresh Avocados (x1 Box)" data-price="35.00">
+                <div style="font-size: 3rem;">🥑</div>
+                <h4>Fresh Avocados</h4>
+                <div class="product-price">$35.00</div>
+                <button class="select-btn" onclick="toggleSelect(this)">Select Item</button>
+            </div>
+        </div>
+
+        <button class="btn-pay" onclick="goToCheckout()">Proceed to Checkout ➔</button>
+    </div>
+
+    <script>
+        // Visually toggle selection state
+        function toggleSelect(button) {
+            button.classList.toggle('selected');
+            if(button.classList.contains('selected')) {
+                button.textContent = "✓ Selected";
+            } else {
+                button.textContent = "Select Item";
+            }
+        }
+
+        // Collect data and hand over to checkout page
+        function goToCheckout() {
+            const selectedItems = [];
+            const cards = document.querySelectorAll('.product-card');
+
+            cards.forEach(card => {
+                const btn = card.querySelector('.select-btn');
+                if(btn.classList.contains('selected')) {
+                    selectedItems.push({
+                        name: card.getAttribute('data-name'),
+                        price: card.getAttribute('data-price')
+                    });
+                }
+            });
+
+            if(selectedItems.length === 0) {
+                alert("Please select at least one item to buy!");
+                return;
+            }
+
+            // Save our structured array into LocalStorage as a string string
+            localStorage.setItem('checkoutCart', JSON.stringify(selectedItems));
+            
+            // Redirect to checkout page
+            window.location.href = 'payment.html';
+        }
+    </script>
+</body>
+</html>
