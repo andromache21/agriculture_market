@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel = "stylesheet" href = "style.css">
+        <meta charset="UTF-8">
+    </head>
+<aside class="checkout-sidebar">
+            <h3>Order Summary</h3>
+            <p style="font-size: 0.85rem; color: #777; margin-bottom: 15px;">Deselect items to remove them from your final payment total:</p>
+            
+            <div class="summary-details">
+                <div class="summary-row">
+                    <span>Order ID:</span>
+                    <strong>#ORD-2026-1024</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Date:</span>
+                    <span>June 10, 2026</span>
+                </div>
+                <hr>
+                
+                <div id="dynamic-items"></div>
+                
+                <div class="summary-row product-item">
+                    <label class="item-selector">
+                        <input type="checkbox" class="product-checkbox" data-price="25.00" id="delivery-checkbox" checked>
+                        <span>Standard Delivery Fee</span>
+                    </label>
+                    <span>$25.00</span>
+                </div>
+                
+                <hr>
+                <div class="summary-row total-row">
+                    <span>Total Amount due:</span>
+                    <span class="total-price" id="total-display">$0.00</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemsContainer = document.getElementById('dynamic-items');
+            const totalDisplay = document.getElementById('total-display');
+            
+            // Retrieve chosen items list from browser memory
+            const rawData = localStorage.getItem('checkoutCart');
+            const cartItems = rawData ? JSON.parse(rawData) : [];
+
+            if (cartItems.length === 0) {
+                itemsContainer.innerHTML = `<p style="color:red; font-size:0.9rem;">No items selected. Go back to products page.</p>`;
+            }
+
+            // Loop and render each item dynamically as a checkbox row
+            cartItems.forEach(item => {
+                const itemRow = document.createElement('div');
+                itemRow.className = 'summary-row product-item';
+                itemRow.style.marginBottom = '12px';
+                
+                itemRow.innerHTML = `
+                    <label class="item-selector">
+                        <input type="checkbox" class="product-checkbox" data-price="${item.price}" checked>
+                        <span>${item.name}</span>
+                    </label>
+                    <span>$${parseFloat(item.price).toFixed(2)}</span>
+                `;
+                itemsContainer.appendChild(itemRow);
+            });
+
+            // Master logic to recalculate checked amounts dynamically
+            function updateTotal() {
+                let total = 0;
+                const checkboxes = document.querySelectorAll('.product-checkbox');
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        total += parseFloat(checkbox.getAttribute('data-price'));
+                    }
+                });
+                totalDisplay.textContent = `$${total.toFixed(2)}`;
+            }
+
+            // Bind change events to all generated checkboxes
+            document.querySelectorAll('.product-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateTotal);
+            });
+
+            // Run initial calculation when entering checkout page
+            updateTotal();
+        });
+    </script>
