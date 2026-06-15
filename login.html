@@ -1,6 +1,7 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Login - BC Fresh Market</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,11 +12,11 @@
 
     <nav>
         <a href="index.html">Home</a>
-        <a href="products.html">Products</a>
+        <a href="products.php">Products</a>
         <a href="register.html">Register</a>
         <a href="login.html">Login</a>
         <a href="cart.html">Cart</a>
-        <a href="checkout.html">Checkout</a>
+        <a href="checkout.php">Checkout</a>
         <a href="transporters.html">Transporters</a>
         <a href="contact.html">Contact Us</a>
     </nav>
@@ -23,15 +24,14 @@
 
 <main>
     <h2>Login</h2>
+    <div id="auth-message" class="form-message"></div>
 
-    <form>
-        <p>Email</p>
-        <input type="email">
+    <form id="login-form" action="login_process.php" method="post">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
 
-        <p>Password</p>
-        <input type="password">
-
-        <br><br>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required minlength="6">
 
         <button type="submit">Login</button>
     </form>
@@ -41,5 +41,22 @@
     <p>&copy; 2026 BC Fresh Market. All Rights Reserved.</p>
 </footer>
 
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const messageBox = document.getElementById('auth-message');
+    if (params.has('error')) {
+        const code = params.get('error');
+        const messages = {
+            missing: 'Please enter both email and password.',
+            invalid: 'Invalid email or password. Please try again.',
+        };
+        messageBox.textContent = messages[code] || 'Login failed. Please try again.';
+        messageBox.style.color = 'red';
+    }
+    if (params.has('registered')) {
+        messageBox.textContent = 'Registration successful. Please log in.';
+        messageBox.style.color = 'green';
+    }
+</script>
 </body>
 </html>

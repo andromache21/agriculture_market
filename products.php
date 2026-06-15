@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+<?php
+session_start();
+if (empty($_SESSION['user_id'])) {
+    header('Location: login.html');
+    exit;
+}
+?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -73,7 +80,7 @@
     <h1>BC Fresh Market</h1>
     <nav>
         <a href="index.html">Home</a>
-        <a href="products.html">Products</a>
+        <a href="products.php">Products</a>
         <a href="register.html">Register</a>
         <a href="login.html">Login</a>
         <a href="cart.html">Cart</a>

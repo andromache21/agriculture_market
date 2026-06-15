@@ -1,6 +1,7 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Register - BC Fresh Market</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,11 +12,11 @@
 
     <nav>
         <a href="index.html">Home</a>
-        <a href="products.html">Products</a>
+        <a href="products.php">Products</a>
         <a href="register.html">Register</a>
         <a href="login.html">Login</a>
         <a href="cart.html">Cart</a>
-        <a href="checkout.html">Checkout</a>
+        <a href="checkout.php">Checkout</a>
         <a href="transporters.html">Transporters</a>
         <a href="contact.html">Contact Us</a>
     </nav>
@@ -23,28 +24,27 @@
 
 <main>
     <h2>User Registration</h2>
+    <div id="auth-message" class="form-message"></div>
 
-    <form>
-        <p>Full Name</p>
-        <input type="text">
+    <form id="register-form" action="register_process.php" method="post">
+        <label for="username">Full Name</label>
+        <input id="username" name="username" type="text" required>
 
-        <p>Email</p>
-        <input type="email">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
 
-        <p>Phone Number</p>
-        <input type="tel">
+        <label for="phone">Phone Number</label>
+        <input id="phone" name="phone" type="tel" required>
 
-        <p>Password</p>
-        <input type="password">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required minlength="6">
 
-        <p>User Type</p>
-        <select>
-            <option>Customer</option>
-            <option>Farmer</option>
-            <option>Transporter</option>
+        <label for="role">User Type</label>
+        <select id="role" name="role" required>
+            <option value="Customer">Customer</option>
+            <option value="Farmer">Farmer</option>
+            <option value="Transporter">Transporter</option>
         </select>
-
-        <br><br>
 
         <button type="submit">Register</button>
     </form>
@@ -54,5 +54,19 @@
     <p>&copy; 2026 BC Fresh Market. All Rights Reserved.</p>
 </footer>
 
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const messageBox = document.getElementById('auth-message');
+    if (params.has('error')) {
+        const code = params.get('error');
+        const messages = {
+            invalid: 'Please fill all fields correctly before registering.',
+            invalid_email: 'Please enter a valid email address.',
+            account_exists: 'An account already exists for this email.',
+        };
+        messageBox.textContent = messages[code] || 'Registration failed. Please try again.';
+        messageBox.style.color = 'red';
+    }
+</script>
 </body>
 </html>
