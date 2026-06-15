@@ -2,8 +2,18 @@
 session_start();
 require_once 'db.php';
 
-if (empty($_SESSION['user_id'])) {
+if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'Customer') {
     header('Location: login.html');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: checkout.php');
+    exit;
+}
+
+if (empty($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'])) {
+    header('Location: checkout.php?error=invalid');
     exit;
 }
 

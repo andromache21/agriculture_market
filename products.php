@@ -1,9 +1,23 @@
 <?php
 session_start();
+require_once 'db.php';
 if (empty($_SESSION['user_id'])) {
     header('Location: login.html');
     exit;
 }
+
+$pdo->exec("CREATE TABLE IF NOT EXISTS products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    farmer_id INT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    quantity INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+$productStmt = $pdo->query('SELECT product_id, name, description, price, quantity FROM products WHERE quantity > 0 ORDER BY created_at DESC');
+$products = $productStmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,59 +90,37 @@ if (empty($_SESSION['user_id'])) {
     </style>
 </head>
 <body>
-<header>
-    <h1>BC Fresh Market</h1>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="products.php">Products</a>
-        <a href="register.html">Register</a>
-        <a href="login.html">Login</a>
-        <a href="cart.html">Cart</a>
-        <a href="checkout.php">Checkout</a>
-        <a href="transporters.html">Transporters</a>
-        <a href="contact.html">Contact Us</a>
-    </nav>
-</header>
+<?php include 'header.php'; ?>
 <main>
     <section class="catalog-container">
         <h2>Marketplace Products</h2>
         <p>Select one or more products and proceed to checkout.</p>
         <div class="products-grid">
-            <div class="product-card" data-id="1" data-name="Organic Tomatoes" data-price="75.00">
-                <div style="font-size: 3rem;">🍅</div>
-                <h3>Organic Tomatoes</h3>
-                <div class="product-price">$75.00</div>
-                <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
-                <input type="number" min="1" value="1" class="quantity-input" title="Quantity">
-            </div>
-            <div class="product-card" data-id="2" data-name="Fresh Maize Bags" data-price="50.00">
-                <div style="font-size: 3rem;">🌽</div>
-                <h3>Fresh Maize Bags</h3>
-                <div class="product-price">$50.00</div>
-                <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
-                <input type="number" min="1" value="1" class="quantity-input" title="Quantity">
-            </div>
-            <div class="product-card" data-id="3" data-name="Sweet Potatoes" data-price="40.00">
-                <div style="font-size: 3rem;">🍠</div>
-                <h3>Sweet Potatoes</h3>
-                <div class="product-price">$40.00</div>
-                <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
-                <input type="number" min="1" value="1" class="quantity-input" title="Quantity">
-            </div>
-            <div class="product-card" data-id="4" data-name="Fresh Avocados" data-price="35.00">
-                <div style="font-size: 3rem;">🥑</div>
-                <h3>Fresh Avocados</h3>
-                <div class="product-price">$35.00</div>
-                <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
-                <input type="number" min="1" value="1" class="quantity-input" title="Quantity">
-            </div>
+            <?php if (empty($products)): ?>
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fff; border: 1px solid #e1e1e1; border-radius: 12px;">
+                    <h3>No products available yet.</h3>
+                    <p>Farmers can add fresh produce from the dashboard.</p>
+                </div>
+            <?php else: ?>
+                <?php foreach ($products as $product): ?>
+                    <div class="product-card" data-id="<?= intval($product['product_id']) ?>" data-name="<?= htmlspecialchars($product['name']) ?>" data-price="<?= number_format($product['price'], 2, '.', '') ?>">
+                        <div style="font-size: 3rem;">🥬</div>
+                        <h3><?= htmlspecialchars($product['name']) ?></h3>
+                        <div class="product-price">$<?= number_format($product['price'], 2) ?></div>
+                        <p><?= htmlspecialchars($product['description']) ?></p>
+                        <p style="margin: 10px 0 0; color: #555;">Stock: <?= intval($product['quantity']) ?></p>
+                        <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
+                        <input type="number" min="1" value="1" class="quantity-input" title="Quantity">
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
-        <button type="button" class="btn-go-to-checkout" onclick="goToCheckout()">Proceed to Checkout</button>
+        <?php if (!empty($products)): ?>
+            <button type="button" class="btn-go-to-checkout" onclick="goToCheckout()">Proceed to Checkout</button>
+        <?php endif; ?>
     </section>
 </main>
-<footer>
-    <p>&copy; 2026 BC Fresh Market. All Rights Reserved.</p>
-</footer>
+<?php include 'footer.php'; ?>
 <script>
     function toggleSelect(button) {
         button.classList.toggle('selected');

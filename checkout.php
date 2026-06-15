@@ -1,6 +1,6 @@
 ﻿<?php
 session_start();
-if (empty($_SESSION['user_id'])) {
+if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'Customer') {
     header('Location: login.html');
     exit;
 }
@@ -80,19 +80,7 @@ if (empty($_SESSION['user_id'])) {
     </style>
 </head>
 <body>
-<header>
-    <h1>BC Fresh Market</h1>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="products.html">Products</a>
-        <a href="register.html">Register</a>
-        <a href="login.html">Login</a>
-        <a href="cart.html">Cart</a>
-        <a href="checkout.php">Checkout</a>
-        <a href="transporters.html">Transporters</a>
-        <a href="contact.html">Contact Us</a>
-    </nav>
-</header>
+<?php include 'header.php'; ?>
 <main>
     <div class="checkout-grid">
         <section class="checkout-card">
@@ -113,6 +101,7 @@ if (empty($_SESSION['user_id'])) {
                 </select>
                 <input type="hidden" id="cart_json" name="cart_json">
                 <input type="hidden" id="total_amount" name="total_amount">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                 <button type="submit" class="btn-submit">Place Order</button>
             </form>
         </section>
@@ -126,9 +115,7 @@ if (empty($_SESSION['user_id'])) {
         </aside>
     </div>
 </main>
-<footer>
-    <p>&copy; 2026 BC Fresh Market. All Rights Reserved.</p>
-</footer>
+<?php include 'footer.php'; ?>
 <script>
     const cartKey = 'checkoutCart';
     const rawCart = localStorage.getItem(cartKey);
