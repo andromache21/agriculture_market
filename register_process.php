@@ -24,7 +24,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
-$check = $pdo->prepare('SELECT user_id FROM user_infor WHERE email = ?');
+$check = $pdo->prepare('SELECT User_id FROM user_table WHERE Email = ?');
 $check->execute([$email]);
 if ($check->fetch()) {
     header('Location: register.html?error=account_exists');
@@ -32,18 +32,18 @@ if ($check->fetch()) {
 }
 
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-$insertUser = $pdo->prepare('INSERT INTO user_infor (username, email, password, role) VALUES (?, ?, ?, ?)');
+$insertUser = $pdo->prepare('INSERT INTO user_table (Username, Email, Password, Role) VALUES (?, ?, ?, ?)');
 $insertUser->execute([$username, $email, $hashedPassword, $role]);
 $userId = $pdo->lastInsertId();
 
 if ($role === 'Customer') {
-    $insertProfile = $pdo->prepare('INSERT INTO customer_infor (user_id, full_name, phone, address) VALUES (?, ?, ?, ?)');
+    $insertProfile = $pdo->prepare('INSERT INTO customer_infor (User_id, Username, Phone, Address) VALUES (?, ?, ?, ?)');
     $insertProfile->execute([$userId, $username, $phone, '']);
 } elseif ($role === 'Farmer') {
-    $insertProfile = $pdo->prepare('INSERT INTO Farmers (user_id, farm_name, location, phone) VALUES (?, ?, ?, ?)');
+    $insertProfile = $pdo->prepare('INSERT INTO farmers_infor (User_id, Farm_name, Location, Phone) VALUES (?, ?, ?, ?)');
     $insertProfile->execute([$userId, $username, '', $phone]);
 } else {
-    $insertProfile = $pdo->prepare('INSERT INTO Transporters (user_id, company_name, vehicle_type, phone) VALUES (?, ?, ?, ?)');
+    $insertProfile = $pdo->prepare('INSERT INTO transporters (User_id, Company_name, Vehicle, Phone) VALUES (?, ?, ?, ?)');
     $insertProfile->execute([$userId, $username, 'Unknown', $phone]);
 }
 

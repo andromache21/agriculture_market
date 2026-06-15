@@ -15,19 +15,19 @@ if ($email === '' || $password === '') {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT user_id, username, password, role FROM user_table WHERE email = ?');
+$stmt = $pdo->prepare('SELECT User_id, Username, Password, Role FROM user_table WHERE Email = ?');
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 
-if (!$user || !password_verify($password, $user['password'])) {
+if (!$user || !password_verify($password, $user['Password'])) {
     header('Location: login.html?error=invalid');
     exit;
 }
 
 session_regenerate_id(true);
-$_SESSION['user_id'] = $user['user_id'];
-$_SESSION['username'] = $user['username'];
-$_SESSION['role'] = $user['role'];
+$_SESSION['user_id'] = $user['User_id'];
+$_SESSION['fullname'] = $user['Username'];
+$_SESSION['role'] = $user['Role'];
 
 header('Location: index.html');
 exit;
