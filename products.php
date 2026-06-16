@@ -16,7 +16,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS products (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
-$productStmt = $pdo->query('SELECT product_id, name, description, price, quantity FROM products WHERE quantity > 0 ORDER BY created_at DESC');
+$productStmt = $pdo->query('SELECT product_id,product_name, description, price, quantity FROM products WHERE quantity > 0 ORDER BY created_at DESC');
 $products = $productStmt->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -103,9 +103,9 @@ $products = $productStmt->fetchAll();
                 </div>
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
-                    <div class="product-card" data-id="<?= intval($product['product_id']) ?>" data-name="<?= htmlspecialchars($product['name']) ?>" data-price="<?= number_format($product['price'], 2, '.', '') ?>">
+                    <div class="product-card" data-id="<?= intval($product['product_id']) ?>" data-name="<?= htmlspecialchars($product['product_name']) ?>" data-price="<?= number_format($product['price'], 2, '.', '') ?>">
                         <div style="font-size: 3rem;">🥬</div>
-                        <h3><?= htmlspecialchars($product['name']) ?></h3>
+                        <h3><?= htmlspecialchars($product['product_name']) ?></h3>
                         <div class="product-price">$<?= number_format($product['price'], 2) ?></div>
                         <p><?= htmlspecialchars($product['description']) ?></p>
                         <p style="margin: 10px 0 0; color: #555;">Stock: <?= intval($product['quantity']) ?></p>
