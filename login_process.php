@@ -30,14 +30,17 @@ $_SESSION['fullname'] = $user['Username'];
 $_SESSION['role'] = $user['Role'];
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
-$redirect = 'index.html';
-if ($user['Role'] === 'Customer') {
+
+
+$redirect = 'index.php'; 
+if ($user['Role'] === 'customer') {
     $redirect = 'products.php';
 } elseif ($user['Role'] === 'Farmer') {
     $redirect = 'farmers.php';
-} elseif ($user['Role'] === 'Transporter') {
-    $redirect = 'transporters.php';
 }
 
-header("Location: $redirect");
-exit;
+
+header("Location: " . $redirect);
+exit();
+
+

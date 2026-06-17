@@ -1,10 +1,16 @@
 ﻿<?php
 session_start();
-if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'Customer') {
+
+
+if (
+    empty($_SESSION['user_id']) ||
+    strtolower(trim($_SESSION['role'] ?? '')) !== 'customer'
+) {
     header('Location: login.html');
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

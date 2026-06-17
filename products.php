@@ -16,7 +16,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS products (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
-$productStmt = $pdo->query('SELECT product_id,product_name, description, price, quantity FROM products WHERE quantity > 0 ORDER BY created_at DESC');
+$productStmt = $pdo->query('SELECT product_id,product_name, description, price, quantity FROM products WHERE quantity > 0 ORDER BY product_id DESC');
 $products = $productStmt->fetchAll();
 ?>
 <!DOCTYPE html>
