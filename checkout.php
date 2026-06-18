@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 
 
@@ -6,7 +6,7 @@ if (
     empty($_SESSION['user_id']) ||
     strtolower(trim($_SESSION['role'] ?? '')) !== 'customer'
 ) {
-    header('Location: login.html');
+    header('Location: login.php');
     exit;
 }
 ?>
@@ -153,7 +153,7 @@ if (
             const itemTotal = item.price * item.quantity;
             total += itemTotal;
             row.innerHTML = `
-                <span>${item.name} × ${item.quantity}</span>
+                <span>${item.name} � ${item.quantity}</span>
                 <strong>$${itemTotal.toFixed(2)}</strong>
             `;
             checkoutItems.appendChild(row);
@@ -188,3 +188,4 @@ if (
 </script>
 </body>
 </html>
+

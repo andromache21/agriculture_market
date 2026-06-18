@@ -3,7 +3,7 @@ session_start();
 require_once 'db.php';
 
 if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'Transporter') {
-    header('Location: login.html');
+    header('Location: login.php');
     exit;
 }
 
@@ -132,3 +132,4 @@ $detailStmt = $pdo->prepare('SELECT product_id, quantity, unit_price FROM Order_
 <?php include 'footer.php'; ?>
 </body>
 </html>
+

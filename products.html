@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -74,8 +74,8 @@
     <nav>
         <a href="index.html">Home</a>
         <a href="products.html">Products</a>
-        <a href="register.html">Register</a>
-        <a href="login.html">Login</a>
+        <a href="register.php">Register</a>
+        <a href="login.php">Login</a>
         <a href="cart.html">Cart</a>
         <a href="checkout.php">Checkout</a>
         <a href="transporters.html">Transporters</a>
@@ -88,28 +88,28 @@
         <p>Select one or more products and proceed to checkout.</p>
         <div class="products-grid">
             <div class="product-card" data-id="1" data-name="Organic Tomatoes" data-price="75.00">
-                <div style="font-size: 3rem;">🍅</div>
+                <div style="font-size: 3rem;">??</div>
                 <h3>Organic Tomatoes</h3>
                 <div class="product-price">$75.00</div>
                 <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
                 <input type="number" min="1" value="1" class="quantity-input" title="Quantity">
             </div>
             <div class="product-card" data-id="2" data-name="Fresh Maize Bags" data-price="50.00">
-                <div style="font-size: 3rem;">🌽</div>
+                <div style="font-size: 3rem;">??</div>
                 <h3>Fresh Maize Bags</h3>
                 <div class="product-price">$50.00</div>
                 <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
                 <input type="number" min="1" value="1" class="quantity-input" title="Quantity">
             </div>
             <div class="product-card" data-id="3" data-name="Sweet Potatoes" data-price="40.00">
-                <div style="font-size: 3rem;">🍠</div>
+                <div style="font-size: 3rem;">??</div>
                 <h3>Sweet Potatoes</h3>
                 <div class="product-price">$40.00</div>
                 <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
                 <input type="number" min="1" value="1" class="quantity-input" title="Quantity">
             </div>
             <div class="product-card" data-id="4" data-name="Fresh Avocados" data-price="35.00">
-                <div style="font-size: 3rem;">🥑</div>
+                <div style="font-size: 3rem;">??</div>
                 <h3>Fresh Avocados</h3>
                 <div class="product-price">$35.00</div>
                 <button type="button" class="select-btn" onclick="toggleSelect(this)">Select Item</button>
@@ -125,7 +125,7 @@
 <script>
     function toggleSelect(button) {
         button.classList.toggle('selected');
-        button.textContent = button.classList.contains('selected') ? '✓ Selected' : 'Select Item';
+        button.textContent = button.classList.contains('selected') ? '? Selected' : 'Select Item';
     }
     function goToCheckout() {
         const selectedItems = [];
@@ -152,3 +152,4 @@
 </script>
 </body>
 </html>
+

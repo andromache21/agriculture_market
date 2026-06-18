@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 require_once 'db.php';
 
@@ -6,7 +6,7 @@ if (
     empty($_SESSION['user_id']) ||
     strtolower(trim($_SESSION['role'] ?? '')) !== 'customer'
 ) {
-    header('Location: login.html');
+    header('Location: login.php');
     exit;
 }
 
@@ -88,3 +88,4 @@ try {
 
 header('Location: checkout.php?success=1');
 exit;
+

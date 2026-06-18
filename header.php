@@ -20,8 +20,8 @@ $fullname = htmlspecialchars($_SESSION['fullname'] ?? '');
             <a href="logout.php">Logout</a>
             <span style="margin-left: 18px; font-weight: 600;">Hello, <?= $fullname ?: 'Member' ?></span>
         <?php else: ?>
-            <a href="register.html">Register</a>
-            <a href="login.html">Login</a>
+            <a href="register.php">Register</a>
+            <a href="login.php">Login</a>
             <a href="cart.html">Cart</a>
             <a href="checkout.php">Checkout</a>
             <a href="transporters.php">Transporters</a>
@@ -29,3 +29,4 @@ $fullname = htmlspecialchars($_SESSION['fullname'] ?? '');
         <?php endif; ?>
     </nav>
 </header>
+

@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
 <header>
     <h1>BC Fresh Market</h1>
 
@@ -33,9 +32,6 @@
         <label for="email">Email</label>
         <input id="email" name="email" type="email" required>
 
-        <label for="phone">Phone Number</label>
-        <input id="phone" name="phone" type="tel" required>
-
         <label for="password">Password</label>
         <input id="password" name="password" type="password" required minlength="6">
 
@@ -60,9 +56,11 @@
     if (params.has('error')) {
         const code = params.get('error');
         const messages = {
-            invalid: 'Please fill all fields correctly before registering.',
+            invalid_request: 'Invalid request. Please submit the registration form.',
+            invalid_input: 'Please complete all registration fields correctly.',
             invalid_email: 'Please enter a valid email address.',
             account_exists: 'An account already exists for this email.',
+            server_error: 'A server error occurred. Please try again later.'
         };
         messageBox.textContent = messages[code] || 'Registration failed. Please try again.';
         messageBox.style.color = 'red';
@@ -70,4 +68,3 @@
 </script>
 </body>
 </html>
-

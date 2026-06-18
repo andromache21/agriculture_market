@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register - BC Fresh Market</title>
+    <title>Login - BC Fresh Market</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
 <header>
     <h1>BC Fresh Market</h1>
 
@@ -23,30 +22,17 @@
 </header>
 
 <main>
-    <h2>User Registration</h2>
+    <h2>Login</h2>
     <div id="auth-message" class="form-message"></div>
 
-    <form id="register-form" action="register_process.php" method="post">
-        <label for="username">Full Name</label>
-        <input id="username" name="username" type="text" required>
-
+    <form id="login-form" action="login_process.php" method="post">
         <label for="email">Email</label>
         <input id="email" name="email" type="email" required>
-
-        <label for="phone">Phone Number</label>
-        <input id="phone" name="phone" type="tel" required>
 
         <label for="password">Password</label>
         <input id="password" name="password" type="password" required minlength="6">
 
-        <label for="role">User Type</label>
-        <select id="role" name="role" required>
-            <option value="Customer">Customer</option>
-            <option value="Farmer">Farmer</option>
-            <option value="Transporter">Transporter</option>
-        </select>
-
-        <button type="submit">Register</button>
+        <button type="submit">Login</button>
     </form>
 </main>
 
@@ -60,14 +46,16 @@
     if (params.has('error')) {
         const code = params.get('error');
         const messages = {
-            invalid: 'Please fill all fields correctly before registering.',
-            invalid_email: 'Please enter a valid email address.',
-            account_exists: 'An account already exists for this email.',
+            invalid_request: 'Invalid request. Please submit the login form.',
+            invalid_credentials: 'Invalid email or password. Please try again.'
         };
-        messageBox.textContent = messages[code] || 'Registration failed. Please try again.';
+        messageBox.textContent = messages[code] || 'Login failed. Please try again.';
         messageBox.style.color = 'red';
+    }
+    if (params.has('registered')) {
+        messageBox.textContent = 'Registration successful. Please log in.';
+        messageBox.style.color = 'green';
     }
 </script>
 </body>
 </html>
-

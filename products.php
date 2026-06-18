@@ -2,7 +2,7 @@
 session_start();
 require_once 'db.php';
 if (empty($_SESSION['user_id'])) {
-    header('Location: login.html');
+    header('Location: login.php');
     exit;
 }
 
@@ -151,3 +151,4 @@ $products = $productStmt->fetchAll();
 </script>
 </body>
 </html>
+

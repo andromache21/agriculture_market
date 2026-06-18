@@ -3,7 +3,7 @@ session_start();
 require_once 'db.php';
 
 if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'Farmer') {
-    header('Location: login.html');
+    header('Location: login.php');
     exit;
 }
 
@@ -162,3 +162,4 @@ $farmerProducts = $productStmt->fetchAll();
 <?php include 'footer.php'; ?>
 </body>
 </html>
+
