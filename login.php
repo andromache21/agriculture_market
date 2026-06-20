@@ -56,6 +56,8 @@
         messageBox.textContent = 'Registration successful. Please log in.';
         messageBox.style.color = 'green';
     }
+
+    
 </script>
 </body>
 </html>

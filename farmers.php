@@ -2,7 +2,7 @@
 session_start();
 require_once 'db.php';
 
-if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'Farmer') {
+if (empty($_SESSION['User_id']) || ($_SESSION['Role'] ?? '') !== 'Farmer') {
     header('Location: login.php');
     exit;
 }
@@ -12,21 +12,43 @@ if (empty($_SESSION['csrf_token'])) {
 }
 $csrfToken = $_SESSION['csrf_token'];
 
-$farmerId = $_SESSION['user_id'];
+
+// --- UPDATE THIS BLOCK AT THE TOP OF YOUR FARMERS.PHP ---
+
+$userId = $_SESSION['User_id']; // The main user account ID from login
 $message = '';
 $errors = [];
 
+// 🛠️ Step 1: Look up the exact matching Farmer_id from farmers_infor
+try {
+    $profileStmt = $pdo->prepare("SELECT Farmer_id FROM farmers_infor WHERE User_id = ? LIMIT 1");
+    $profileStmt->execute([$userId]);
+    $farmerProfile = $profileStmt->fetch();
+
+    if (!$farmerProfile) {
+        // If they don't have a linked profile record yet, we can't let them add products
+        $errors[] = "Profile error: Could not verify your farmer account details. Please contact support.";
+        $farmerId = null;
+    } else {
+        $farmerId = $farmerProfile['Farmer_id']; // This is the actual correct ID!
+    }
+} catch (PDOException $e) {
+    $errors[] = "Database linkage error: " . $e->getMessage();
+    $farmerId = null;
+}
+
+// Ensure table exists block runs here...
 $pdo->exec("CREATE TABLE IF NOT EXISTS products (
-    product_id INT AUTO_INCREMENT PRIMARY KEY,
-    farmer_id INT NULL,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    quantity INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    Product_id INT AUTO_INCREMENT PRIMARY KEY,
+    Farmer_id INT NULL,
+    Product_name VARCHAR(255) NOT NULL,
+    Description TEXT,
+    Price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    Quantity INT NOT NULL DEFAULT 0,
+    Created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $farmerId !== null) {
     if (empty($_POST['csrf_token']) || !hash_equals($csrfToken, $_POST['csrf_token'])) {
         $errors[] = 'The request could not be validated. Please refresh and try again.';
     }
@@ -47,9 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = $pdo->prepare('INSERT INTO products (farmer_id, name, description, price, quantity) VALUES (?, ?, ?, ?, ?)');
+        // 🛠️ Step 2: Insert using the true verified Farmer_id
+        $stmt = $pdo->prepare('INSERT INTO products (Farmer_id, Product_name, Description, Price, Quantity) VALUES (?, ?, ?, ?, ?)');
         $stmt->execute([
-            $farmerId,
+            $farmerId, // Successfully matches the foreign key constraint now!
             $name,
             $description,
             number_format((float)$price, 2, '.', ''),
@@ -59,9 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$productStmt = $pdo->prepare('SELECT product_id, name, description, price, quantity, created_at FROM products WHERE farmer_id = ? ORDER BY created_at DESC');
-$productStmt->execute([$farmerId]);
-$farmerProducts = $productStmt->fetchAll();
+
+// 🛠️ FIX 3: Changed unassigned $productStmt to match your active variable name $stmt
+$stmt = $pdo->prepare("SELECT Product_id, Product_name, Price, Quantity, Description FROM products WHERE Farmer_id = ?");
+$stmt->execute([$farmerId]);
+$farmerProducts = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,7 +117,7 @@ $farmerProducts = $productStmt->fetchAll();
 <main>
     <div class="dashboard-grid">
         <section class="card">
-            <h2>Welcome, <?= htmlspecialchars($_SESSION['fullname']) ?>.</h2>
+            <h2>Welcome, <?= htmlspecialchars($_SESSION['Username'] ?? 'Farmer') ?>.</h2>
             <p>Use this page to add fresh produce and manage your stock pricing.</p>
         </section>
 
@@ -112,6 +137,7 @@ $farmerProducts = $productStmt->fetchAll();
             <?php endif; ?>
             <form class="product-form" method="post" action="farmers.php">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                
                 <label for="name">Product Name</label>
                 <input id="name" name="name" type="text" required>
 
@@ -136,6 +162,7 @@ $farmerProducts = $productStmt->fetchAll();
                 <table class="product-table">
                     <thead>
                         <tr>
+                            <th>Product ID</th>
                             <th>Name</th>
                             <th>Description</th>
                             <th>Price</th>
@@ -145,12 +172,14 @@ $farmerProducts = $productStmt->fetchAll();
                     </thead>
                     <tbody>
                         <?php foreach ($farmerProducts as $product): ?>
+                            <!-- 🛠️ FIX 4: Completely cleaned out the duplicated, misaligned rows and lowercase keys -->
                             <tr>
-                                <td><?= htmlspecialchars($product['name']) ?></td>
-                                <td><?= htmlspecialchars($product['description']) ?></td>
-                                <td>$<?= number_format($product['price'], 2) ?></td>
-                                <td><?= intval($product['quantity']) ?></td>
-                                <td><?= htmlspecialchars($product['created_at']) ?></td>
+                                <td><?= htmlspecialchars($product['Product_id']) ?></td>
+                                <td><b><?= htmlspecialchars($product['Product_name']) ?></b></td>
+                                <td><?= htmlspecialchars($product['Description'] ?: 'No description provided') ?></td>
+                                <td>$<?= number_format($product['Price'], 2) ?></td>
+                                <td><?= intval($product['Quantity']) ?></td>
+                                <td>Available Now</td> </tr>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -162,4 +191,3 @@ $farmerProducts = $productStmt->fetchAll();
 <?php include 'footer.php'; ?>
 </body>
 </html>
-

@@ -1,4 +1,5 @@
 ﻿<?php
+session_start();
 require_once 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -28,7 +29,7 @@ try {
     $pdo->beginTransaction();
 
     // Ensure email is unique
-    $checkStmt = $pdo->prepare('SELECT user_id FROM user_infor WHERE email = ?');
+    $checkStmt = $pdo->prepare('SELECT User_id FROM user_table WHERE Email = ?');
     $checkStmt->execute([$email]);
 
     if ($checkStmt->fetch()) {
@@ -40,41 +41,47 @@ try {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     $insertUserStmt = $pdo->prepare(
-        'INSERT INTO user_infor (username, email, password, role) VALUES (?, ?, ?, ?)'
+        'INSERT INTO user_table (Username, Email, Password, Role) VALUES (?, ?, ?, ?)'
     );
     $insertUserStmt->execute([$username, $email, $hashedPassword, $role]);
 
     $userId = $pdo->lastInsertId();
 
     if ($role === 'Farmer') {
+        // 🛠️ FIX: Fixed table name to farmers_infor, matched uppercase columns, and provided 4 placeholders/values
         $insertFarmerStmt = $pdo->prepare(
-            'INSERT INTO Farmers (user_id, farm_name, location) VALUES (?, ?, ?)'
+            'INSERT INTO farmers_infor (User_id, Farm_name, Location, Phone) VALUES (?, ?, ?, ?)'
         );
-        $insertFarmerStmt->execute([$userId, 'Pending Setup', 'Pending Setup']);
+        $insertFarmerStmt->execute([$userId, 'Pending Setup', 'Pending Setup', '0000000000']);
+
     } elseif ($role === 'Customer') {
+        // 🛠️ FIX: Matched uppercase columns for customer_infor
         $insertCustomerStmt = $pdo->prepare(
-            'INSERT INTO customer_infor (user_id, full_name) VALUES (?, ?)'
+            'INSERT INTO customer_infor (User_id, Phone, Address) VALUES (?, ?, ?)'
         );
-        $insertCustomerStmt->execute([$userId, $username]);
+        $insertCustomerStmt->execute([$userId, '0000000000', 'Pending Setup']);
+
     } elseif ($role === 'Transporter') {
-        // Add transporter placeholder row if your application maintains a transporters table
+        // 🛠️ FIX: Matched exact table columns from your transporters table layout
         $insertTransporterStmt = $pdo->prepare(
-            'INSERT INTO transporters (user_id, company_name, location) VALUES (?, ?, ?)'
+            'INSERT INTO transporters (User_id, Company_name, Vehicle, Phone) VALUES (?, ?, ?, ?)'
         );
-        $insertTransporterStmt->execute([$userId, 'Pending Setup', 'Pending Setup']);
+        $insertTransporterStmt->execute([$userId, 'Pending Setup', 'Pending Setup', '0000000000']);
     }
 
     $pdo->commit();
 
     header('Location: login.php?registered=success');
     exit;
+
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-
-    error_log('Registration error: ' . $e->getMessage());
-    header('Location: register.php?error=server_error');
-    exit;
+    // This forces the page to stop and print the exact SQL problem if something goes wrong
+    echo "<h1>Database Error Diagnostic</h1>";
+    echo "<b>Error Message:</b> " . $e->getMessage() . "<br>";
+    echo "<b>Error Code:</b> " . $e->getCode() . "<br>";
+    echo "<b>Line number:</b> " . $e->getLine();
+    exit();
 }
-

@@ -1,10 +1,9 @@
 <?php
 session_start();
 
-
 if (
-    empty($_SESSION['user_id']) ||
-    strtolower(trim($_SESSION['role'] ?? '')) !== 'customer'
+    empty($_SESSION['User_id']) ||
+    strtolower(trim($_SESSION['Role'] ?? '')) !== 'customer'
 ) {
     header('Location: login.php');
     exit;
@@ -105,9 +104,10 @@ if (
                     <option value="Bank Transfer">Bank Transfer</option>
                     <option value="Cash On Delivery">Cash On Delivery</option>
                 </select>
-                <input type="hidden" id="cart_json" name="cart_json">
+                <input type="hidden" id="cart_json" name="cart_json" value='<?php echo isset($_SESSION['cart']) ? json_encode($_SESSION['cart']) : "[]"; ?>'>
+            
                 <input type="hidden" id="total_amount" name="total_amount">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo ($_SESSION['csrf_token'] ?? '') ?>">
                 <button type="submit" class="btn-submit">Place Order</button>
             </form>
         </section>
@@ -153,7 +153,7 @@ if (
             const itemTotal = item.price * item.quantity;
             total += itemTotal;
             row.innerHTML = `
-                <span>${item.name} × ${item.quantity}</span>
+                <span>${item.name} ï¿½ ${item.quantity}</span>
                 <strong>$${itemTotal.toFixed(2)}</strong>
             `;
             checkoutItems.appendChild(row);

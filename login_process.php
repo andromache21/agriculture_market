@@ -1,4 +1,10 @@
 ﻿<?php
+// 🛠️ Force PHP to show any hidden errors or database mismatches immediately
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+session_start();
 require_once 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -15,45 +21,48 @@ if ($email === '' || $password === '' || !filter_var($email, FILTER_VALIDATE_EMA
 }
 
 try {
+    // 🛠️ FIX: Changed lowercase 'email' to uppercase 'Email' to match your table layout
     $stmt = $pdo->prepare(
-        'SELECT user_id, username, password, role FROM user_infor WHERE email = ? LIMIT 1'
+        'SELECT User_id, Username, Password, Role FROM user_table WHERE Email = ? LIMIT 1'
     );
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
-    if (!$user || !password_verify($password, $user['password'])) {
+
+    if (!$user || !password_verify($password, $user['Password'])) {
         header('Location: login.php?error=invalid_credentials');
         exit;
     }
 
-    session_start();
+    // 🛠️ FIX: Removed the duplicate session_start() that was crashing the runtime engine here
     session_regenerate_id(true);
 
-    $_SESSION['user_id'] = (int)$user['user_id'];
-    $_SESSION['username'] = $user['username'];
-    $_SESSION['role'] = $user['role'];
+    $_SESSION['User_id'] = (int)$user['User_id'];
+    $_SESSION['Username'] = $user['Username'];
+    $_SESSION['Role'] = $user['Role'];
 
-    if ($user['role'] === 'Farmer') {
-        header('Location: farmer_dashboard.php');
+    if ($user['Role'] === 'Farmer') {
+        header('Location: farmers.php');
         exit;
     }
 
-    if ($user['role'] === 'Customer') {
+    if ($user['Role'] === 'Customer') {
         header('Location: products.php');
         exit;
     }
 
-    if ($user['role'] === 'Transporter') {
+    if ($user['Role'] === 'Transporter') {
         header('Location: transporters.php');
         exit;
     }
 
     header('Location: products.php');
     exit;
+
 } catch (PDOException $e) {
-    error_log('Login error: ' . $e->getMessage());
-    header('Location: login.php?error=invalid_credentials');
-    exit;
+    // 🛠️ FIX: Stop hiding the error behind a redirect so we can debug instantly if it fails
+    echo "<h1>Login Database Error Diagnostic</h1>";
+    echo "<b>Error Message:</b> " . $e->getMessage() . "<br>";
+    echo "<b>Line number:</b> " . $e->getLine();
+    exit();
 }
-
-
