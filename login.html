@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -47,8 +47,8 @@
     if (params.has('error')) {
         const code = params.get('error');
         const messages = {
-            missing: 'Please enter both email and password.',
-            invalid: 'Invalid email or password. Please try again.',
+            invalid_request: 'Invalid request. Please submit the login form.',
+            invalid_credentials: 'Invalid email or password. Please try again.'
         };
         messageBox.textContent = messages[code] || 'Login failed. Please try again.';
         messageBox.style.color = 'red';
