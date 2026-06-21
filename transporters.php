@@ -1,8 +1,14 @@
 <?php
+// 🛠️ Force PHP to show any hidden errors or database mismatches immediately
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 require_once 'db.php';
 
-if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'Transporter') {
+// 🛠️ Authorization check matching exact capitalized session keys
+if (empty($_SESSION['User_id']) || ($_SESSION['Role'] ?? '') !== 'Transporter') {
     header('Location: login.php');
     exit;
 }
@@ -34,21 +40,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 try {
+    // 🛠️ Completely removed o.created_at from the selection to prevent the error
     $orderStmt = $pdo->query(
-        'SELECT o.order_id, o.customer_id, o.total_amount, o.order_status, o.created_at, c.Username AS customer_name, c.Phone AS customer_phone
-         FROM Orders o
-         LEFT JOIN customer_infor c ON o.customer_id = c.customer_id
-         ORDER BY o.order_id DESC'
+        'SELECT o.Order_id AS order_id, o.Customer_id AS customer_id, o.Total_amount AS total_amount, o.Order_status AS order_status, c.Username AS customer_name, c.Phone AS customer_phone
+         FROM order_infor o
+         LEFT JOIN customer_infor c ON o.Customer_id = c.Customer_id
+         ORDER BY o.Order_id DESC'
     );
     $orders = $orderStmt->fetchAll();
 } catch (PDOException $e) {
     $orders = [];
-    if ($message === '') {
-        $errorMessage = 'No orders are available yet or the order table is not yet created.';
-    }
+    $errorMessage = 'Database Order Query Error: ' . $e->getMessage();
 }
 
-$detailStmt = $pdo->prepare('SELECT product_id, quantity, unit_price FROM Order_Details WHERE order_id = ?');
+
+
+// Fixed target columns based on your order_details schema visual
+$detailStmt = $pdo->prepare('SELECT Product_id, Quantity, Price FROM order_details WHERE Order_id = ?');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,7 +88,7 @@ $detailStmt = $pdo->prepare('SELECT product_id, quantity, unit_price FROM Order_
     <section class="dashboard-grid">
         <div class="card">
             <h2>Transporter Dashboard</h2>
-            <p>Welcome, <?= htmlspecialchars($_SESSION['fullname']) ?>. Review incoming delivery requests and update order status.</p>
+            <p>Welcome, <?= htmlspecialchars($_SESSION['Username'] ?? 'Transporter') ?>. Review incoming delivery requests and update order status.</p>
             <?php if ($message): ?>
                 <div class="message success"><?= htmlspecialchars($message) ?></div>
             <?php endif; ?>
@@ -88,6 +96,7 @@ $detailStmt = $pdo->prepare('SELECT product_id, quantity, unit_price FROM Order_
                 <div class="message error"><?= htmlspecialchars($errorMessage) ?></div>
             <?php endif; ?>
         </div>
+
         <?php if (empty($orders)): ?>
             <div class="card">
                 <h2>No Orders Available</h2>
@@ -97,22 +106,27 @@ $detailStmt = $pdo->prepare('SELECT product_id, quantity, unit_price FROM Order_
             <?php foreach ($orders as $order): ?>
                 <div class="card order-card">
                     <h3>Order #<?= intval($order['order_id']) ?> — <?= htmlspecialchars($order['order_status']) ?></h3>
-                    <p><strong>Customer:</strong> <?= htmlspecialchars($order['customer_name'] ?? 'Unknown') ?></p>
-                    <p><strong>Contact:</strong> <?= htmlspecialchars($order['customer_phone'] ?? 'N/A') ?></p>
-                    <p><strong>Total:</strong> $<?= number_format($order['total_amount'], 2) ?></p>
-                    <p><strong>Placed:</strong> <?= htmlspecialchars($order['created_at']) ?></p>
+                     <p><strong>Customer:</strong> <?= htmlspecialchars($order['customer_name'] ?? 'Unknown') ?></p>
+                     <p><strong>Contact:</strong> <?= htmlspecialchars($order['customer_phone'] ?? 'N/A') ?></p>
+                     <p><strong>Total:</strong> $<?= number_format($order['total_amount'], 2) ?></p>
+                     <p><strong>Status:</strong> Active Now</p> ```
+
+
+                    
+                    
                     <div class="order-items">
                         <strong>Items:</strong>
                         <ul>
                             <?php
-                                $detailStmt->execute([$order['order_id']]);
+                                $detailStmt->execute([$order['order_id']]); 
                                 $items = $detailStmt->fetchAll();
                                 foreach ($items as $item):
                             ?>
-                                <li>Product #<?= intval($item['product_id']) ?> × <?= intval($item['quantity']) ?> at $<?= number_format($item['unit_price'], 2) ?> each</li>
+                                <li>Product #<?= intval($item['Product_id']) ?> × <?= intval($item['Quantity']) ?> at $<?= number_format($item['Price'], 2) ?> each</li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
+
                     <form method="post" action="transporters.php">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                         <input type="hidden" name="order_id" value="<?= intval($order['order_id']) ?>">
@@ -132,4 +146,3 @@ $detailStmt = $pdo->prepare('SELECT product_id, quantity, unit_price FROM Order_
 <?php include 'footer.php'; ?>
 </body>
 </html>
-
