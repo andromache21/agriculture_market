@@ -1,10 +1,17 @@
+
 <?php
+// --- UPDATE THIS GATE AT THE VERY TOP OF YOUR PRODUCTS.PHP ---
+
 session_start();
 require_once 'db.php';
-if (empty($_SESSION['user_id'])) {
+
+// 🛠️ FIX: Match exact capitalized session keys ('User_id' and 'Role')
+if (empty($_SESSION['User_id']) || ($_SESSION['Role'] ?? '') !== 'Customer') {
     header('Location: login.php');
     exit;
 }
+
+// ... rest of your products.php code continues below ...
 
 $pdo->exec("CREATE TABLE IF NOT EXISTS products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
