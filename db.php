@@ -1,8 +1,8 @@
 ﻿<?php
-$host = 'localhost';
-$db   = 'agriculture market'; // Make sure this matches your phpMyAdmin database name exactly
-$user = 'root';
-$pass = ''; // Leave this blank for XAMPP default
+$host = 'sql202.infinityfree.com';
+$db   = 'if0_42244635_agriculture_market'; 
+$user = 'if0_42244635';
+$pass = 'iu7TBtF9Tv9'; // The unique hosting password we saved earlier
 $charset = 'utf8mb4';
 
 // Data Source Name configuration
